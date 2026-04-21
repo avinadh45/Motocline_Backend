@@ -83,17 +83,20 @@ export class UserService implements IUserService {
     return true;
 }
     async loginUser(email: string, password: string): Promise<any> {
+        
         const user = await this.userReadrepo.findUserByEmail(email);
         if (!user) {
             throw new Error("user not found");
         }
+         if (!user.isVerified) {
+            throw new Error("Please verify your email before logging in.");
+        }
+        console.log("Login request:", email, password);
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             throw new Error("Invalid password");
         }
-        if (!user.isVerified) {
-            throw new Error("Please verify your email before logging in.");
-        }
+       
         const accessToken = generateAccessToken(user._id.toString());
         const refreshToken = generateRefreshToken(user._id.toString());
         return {
@@ -125,4 +128,68 @@ export class UserService implements IUserService {
 
     }
     
+    async forgotPassword(email:string){
+
+        const user = await this.userReadrepo.findUserByEmail(email)
+
+        if(!user){
+            throw new Error("user not found")
+        }
+        const token  = crypto.randomBytes(30).toString("hex")
+        const expiry = new Date(Date.now() + 1000 * 60 * 10)
+        await this.userUpdaterepo.updateUser(user._id.toString(),{
+             resetToken: token,
+             resetTokenExpiry: expiry
+        })
+        const resetLink = `http://localhost:5173/reset-password?token=${token}`
+        await this.mailService.sendResetPasseord(email,resetLink)
+    }
+
+    async resetPassword(token: string, password: string): Promise<void> {
+        
+        const user = await this.userReadrepo.findUserByResetToken(token)
+
+        if(!user){
+            throw new Error("invald")
+        }
+        if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+           throw new Error("reset token expired")
+           }
+
+        const hashedPassword = await bcrypt.hash(password,10)
+
+        await this.userUpdaterepo.updateUser(user._id.toString(),{
+             password: hashedPassword,
+            resetToken: null,
+           resetTokenExpiry: null 
+        })
+
+        console.log("New password:", password);
+      console.log("User before update:", user.password);
+    }
+    async googleLogin(data:{email:string,name:string,googleId:string}){
+
+ let user = await this.userReadrepo.findUserByEmail(data.email)
+
+     if(!user){
+
+       user = await this.userCreaterepo.createUser({
+       name:data.name,
+        email:data.email,
+       googleId:data.googleId
+       })
+
+     }
+
+    const accessToken = generateAccessToken(user._id)
+    const refreshToken = generateRefreshToken(user._id)
+
+    return {
+     user,
+     accessToken,
+    refreshToken
+    }
+
+  }
+  
 }

@@ -11,10 +11,12 @@ export interface IUser {
     phoneNumber: string;
     password:string;
     userProfile?: IUserProfile;
+     garageId?: string;
     isVerified?: boolean;
     isBlocked?:boolean;
-    resetToken?: string;
-    resetTokenExpiry?: Date;
+    resetToken?: string | null;
+       googleId?:string | null
+    resetTokenExpiry?: Date | null;
     createdAt?:Date;
     updateAt?:Date;
 }

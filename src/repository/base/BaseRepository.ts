@@ -2,7 +2,7 @@ import { Model, Document } from "mongoose";
 import { IBaseRepository } from "./IBaseRepository";
 
 export class BaseRepository<T> implements IBaseRepository<T> {
-    private model: Model<T>;
+    protected model: Model<T>;
 
     constructor(model: Model<T>) {
         this.model = model;
@@ -21,6 +21,6 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     }
 
     async updateById(id: string, updateData: Partial<T>): Promise<T | null> {
-        return await this.model.findByIdAndUpdate(id, updateData, { new: true });
+        return await this.model.findByIdAndUpdate(id, updateData, { returnDocument: "after" });
     }
 }

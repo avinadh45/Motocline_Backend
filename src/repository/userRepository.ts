@@ -17,8 +17,10 @@ export class UserRepository
         return await this.create(userData);
     }
 
-    async findUserByEmail(Email: string): Promise<IUser | null> {
-        return await this.findOne({ email: Email });
+    async findUserByEmail(email: string): Promise<IUser | null> {
+    return await (this.model as any)
+        .findOne({ email })
+        .select("+password");
     }
 
     async findUserById(id: string): Promise<IUser | null> {
@@ -28,4 +30,9 @@ export class UserRepository
     async updateUser(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
         return await this.updateById(id, updateData);
     }
+
+    async findUserByResetToken(token: string): Promise<IUser | null> {
+       return await this.findOne({ resetToken: token });
+    }
+
 }

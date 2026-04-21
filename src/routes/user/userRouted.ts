@@ -26,5 +26,8 @@ router.post("/verify-otp",userController.Verifyotp.bind(userController))
 router.post("/login",userController.LoginUser.bind(userController))
 router.post("/refresh-token",userController.refresnToken.bind(userController))
 router.post("/resend-otp",userController.resendOtp.bind(userController))
+router.post("/forgot-password",userController.forgetPassword.bind(userController))
+router.post("/reset-password",userController.resetPassword.bind(userController))
+router.post("/google-login",userController.googleLogin.bind(userController))
 
 export default router
