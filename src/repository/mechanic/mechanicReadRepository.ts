@@ -9,8 +9,8 @@ export class MechanicReadRepository implements IMechanicReadRepository {
     return await UserModel.findOne({ email, role: "mechanic" }).lean() as IMechanic | null
   }
 
-  async findById(id: string): Promise<IMechanic | null> {
-    return await UserModel.findById(id).lean() as IMechanic | null
+  async findById(id: string): Promise<IMechanic| null> {
+    return await UserModel.findById(id).lean() as IMechanic| null
   }
 
   async findByGarage(garageId: string): Promise<IMechanic[]> {
@@ -21,3 +21,4 @@ export class MechanicReadRepository implements IMechanicReadRepository {
   }
 
 }
+

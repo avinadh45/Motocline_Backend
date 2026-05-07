@@ -1,9 +1,11 @@
+
+export interface AdminDTO {
+  id: string
+  email: string
+  role: "admin"
+}
 export interface AdminAuthResponseDTO {
-  admin: {
-    id: string
-    email: string
-    role: string
-  }
+  admin: AdminDTO
   accessToken: string
   refreshToken: string
 }

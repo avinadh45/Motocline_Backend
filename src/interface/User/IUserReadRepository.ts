@@ -4,4 +4,5 @@ export interface IUserReadRepository{
     findUserByEmail(Email:string):Promise <IUser | null>;
     findUserById(id:string) : Promise<IUser | null>
     findUserByResetToken(token:string):Promise<IUser | null>
+    getAllUser():Promise<IUser[]>
 }

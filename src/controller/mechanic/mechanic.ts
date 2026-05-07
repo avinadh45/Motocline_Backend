@@ -1,93 +1,70 @@
 import { Request, Response } from "express";
-import { MechanicService } from "../../service/mechanic/mechanicService";
+import { IMechanicService } from "../../interface/Machanic/IMechanicservice";
 import { HttpStatus } from "../../enums/httpstatus";
+import { MESSAGES } from "../../constants/message";
 
 export class MechanicController {
-    constructor(private mechanicService: MechanicService) {}
+  constructor(private mechanicService: IMechanicService) {}
 
-    async createMechanic(req: Request, res: Response) {
-        try {
-            const { email, password } = req.body;
-            
-            if (!email || !password) {
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    success: false,
-                    message: "Email and password are required"
-                });
-            }
-
-           
-            const garageId = (req as any).user?.id;
-
-            if (!garageId) {
-                return res.status(HttpStatus.UNAUTHORIZED).json({
-                    success: false,
-                    message: "Unauthorized: Missing service center context"
-                });
-            }
-
-            const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
-
-            const newMechanic = await this.mechanicService.createMechanic(garageId,{
-                name,
-                email,
-                password,
-                garageId
-            });
-
-            return res.status(HttpStatus.CREATED).json({
-                success: true,
-                message: "Mechanic created successfully",
-                data: newMechanic
-            });
-
-        } catch (error: any) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                success: false,
-                message: error.message || "Failed to create mechanic"
-            });
-        }
+  async createMechanic(req: Request, res: Response) {
+    try {
+      let serviceCenterId = (req as any).user?.id;
+      if (!serviceCenterId) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          success: false,
+          message: MESSAGES.COMMON.UNAUTHORIZED,
+        });
+      }
+      const data = { ...req.body, garageId: serviceCenterId };
+      const serviceCenter = await this.mechanicService.createMechanic(data);
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ success: true, data: serviceCenter });
+    } catch (error: any) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: error.message,
+      });
     }
+  }
 
-    async loginMechanic(req: Request, res: Response) {
-        try {
-            const { email, password } = req.body;
-
-            if (!email || !password) {
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    success: false,
-                    message: "Email and password are required"
-                });
-            }
-
-            const response = await this.mechanicService.loginMechanic(email, password);
-
-            return res.status(HttpStatus.OK).json({
-                success: true,
-                message: "Login successful",
-                data: response
-            });
-
-        } catch (error: any) {
-            return res.status(HttpStatus.UNAUTHORIZED).json({
-                success: false,
-                message: error.message || "Login failed"
-            });
-        }
+  async getMechanic(req: Request, res: Response) {
+    try {
+      const serviceCenterId = (req as any).user?.id;
+      if (!serviceCenterId) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          success: false,
+          message: MESSAGES.COMMON.UNAUTHORIZED,
+        });
+      }
+      const mechanic = await this.mechanicService.getMechanics(serviceCenterId);
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: mechanic,
+      });
+    } catch (error: any) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: error.message,
+      });
     }
-    async getMechanic(req:Request,res:Response){
-        try {
-            const serviceCenterId = (req as any).user?.id
-             if (!serviceCenterId) {
-              return res.status(HttpStatus.UNAUTHORIZED).json({
-               message: "Unauthorized"
-              })
-               }
-            const mechanic = await this.mechanicService.getMechanic(serviceCenterId)
-            res.status(HttpStatus.OK).json(mechanic)
-        } catch (error : any) {
-            res.status(HttpStatus.BAD_REQUEST).json({message:error.message})
-        }
-    }
+  }
 
+  async loginMechanic(req: Request, res: Response) {
+    console.log("loginMechanic heree", req.body);
+    try {
+      const { email, password } = req.body;
+      const mechanic = await this.mechanicService.login({ email, password });
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        data: mechanic,
+      });
+    } catch (error: any) {
+      console.log("Error in loginMechanic:", error);
+      res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 }

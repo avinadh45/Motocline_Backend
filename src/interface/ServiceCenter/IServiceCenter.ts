@@ -8,6 +8,10 @@ _id: Types.ObjectId
   password: string
   isBlocked?: boolean
 
+  createdAt?: Date   
+  updatedAt?: Date
+    resetToken?: string | null;
+  resetTokenExpiry?: Date | null;
   providerProfile: {
     garageName: string
     ownerName: string

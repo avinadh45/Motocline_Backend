@@ -4,6 +4,7 @@ import { IUserCreateRepository } from "../interface/User/IUserCreateRepository";
 import { IUserReadRepository } from "../interface/User/IUserReadRepository";
 import { IUserUpdateRepository } from "../interface/User/IUserUpdateRepository";
 import { BaseRepository } from "./base/BaseRepository";
+import User from "../model/Usermodel";
 
 export class UserRepository
     extends BaseRepository<IUser>
@@ -34,5 +35,10 @@ export class UserRepository
     async findUserByResetToken(token: string): Promise<IUser | null> {
        return await this.findOne({ resetToken: token });
     }
-
+    async getAllUser(): Promise<IUser[]> {
+        return await User.find({role:"user"}).sort({createAt:-1})
+    }
+  async updateById(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
+      return await User.findByIdAndUpdate(id,updateData,{returnDocument:"after"})
+  }
 }

@@ -7,7 +7,7 @@ export interface IUser {
     _id: string;
     name:string;
     email:string;
-    role: "user" | "serviceCenter" | "admin" | "mechanic";
+    role: "user"  | "admin" | "mechanic";
     phoneNumber: string;
     password:string;
     userProfile?: IUserProfile;

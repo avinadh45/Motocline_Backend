@@ -22,6 +22,15 @@ const serviceCenterSchema = new Schema<IServiceCenter>(
     default: false
   },
 
+  resetToken: {
+  type: String,
+  default: null,
+},
+resetTokenExpiry: {
+  type: Date,
+  default: null,
+},
+
   providerProfile: {
     garageName: {
       type: String,
@@ -105,6 +114,7 @@ const serviceCenterSchema = new Schema<IServiceCenter>(
   }
 
 },
+
 { timestamps: true }
 );
 

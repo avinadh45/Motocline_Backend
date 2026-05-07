@@ -1,7 +1,7 @@
 import { IMechanic } from "./machanicinterface";
-import { CreateMechanicDTO } from "../../dto/mechanic/createMechanicdto";
-
+import { IUser } from "../User/userinterface";
 export interface IMechanicWriteRepository{
-    create (data:CreateMechanicDTO):Promise<IMechanic>
+    create (data:Partial<IUser>):Promise<IMechanic>
     save(user:IMechanic):Promise<IMechanic>
+    update(id:string,updatedata:Partial<IMechanic>):Promise<IMechanic | null>
 }

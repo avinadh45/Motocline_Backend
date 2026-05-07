@@ -1,14 +1,13 @@
 
-import { CreateMechanicDTO } from "../../dto/mechanic/createMechanicdto"
+  import { CreateMechanicDTO } from "../../dto/mechanic/createMechanicdto"
+  import { MechanicLoginDTO } from "../../dto/mechanic/mechanicLoginDTO"
+  import { MechanicResponseDTO } from "../../dto/mechanic/mechanicResponsedto"
+  import { MechanicAuthResponseDTO } from "../../dto/mechanic/mechanicAuthDTO"
+// import { IMechanic } from "./machanicinterface"
+  export interface IMechanicService {
 
-import { MechanicResponseDTO } from "../../dto/mechanic/mechanicResponsedto"
-
-export interface IMechanicService {
-
-  createMechanic(data: CreateMechanicDTO): Promise<MechanicResponseDTO>
-
-  getMechanics(garageId: string): Promise<MechanicResponseDTO[]>
-
-  toggleBlock(mechanicId: string): Promise<MechanicResponseDTO>
-
-}
+    createMechanic(data: CreateMechanicDTO): Promise<MechanicResponseDTO>
+    login(data:MechanicLoginDTO): Promise<MechanicAuthResponseDTO>
+    getMechanics(garageId: string): Promise<MechanicResponseDTO[]>
+    block(id:string):Promise<MechanicResponseDTO>
+  }

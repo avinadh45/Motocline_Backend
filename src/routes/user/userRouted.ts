@@ -4,6 +4,8 @@ import { UserController } from "../../controller/user/userController";
 import { UserRepository } from "../../repository/userRepository";
 import { RedisOtpRepository } from "../../repository/otp/RedisOtpRepository";
 import { NodeMailerService } from "../../service/mail/NodeMailerService";
+
+import { checkBlocked } from "../../middleware/checkBlock";
 import User from "../../model/Usermodel";
 
 const router = Router()
@@ -29,5 +31,6 @@ router.post("/resend-otp",userController.resendOtp.bind(userController))
 router.post("/forgot-password",userController.forgetPassword.bind(userController))
 router.post("/reset-password",userController.resetPassword.bind(userController))
 router.post("/google-login",userController.googleLogin.bind(userController))
+
 
 export default router

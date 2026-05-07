@@ -2,6 +2,12 @@
  import { IUserService } from "../../interface/User/IUserService";
  import { HttpStatus } from "../../enums/httpstatus";
  import { OAuth2Client } from "google-auth-library";
+import { UserRegisterDTO } from "../../dto/user/RegisterDTO";
+import { ForgotPasswordDTO } from "../../dto/user/ForgotpasswordDTO";
+import { VerifyOtpDTO } from "../../dto/user/OtpDto";
+import { LoginDTO } from "../../dto/user/LoginDTO";
+import { ResetPasswordDTO } from "../../dto/user/RestpasswordDTO";
+import {MESSAGES} from "../../constants/message"
 
  export class UserController {
         
@@ -9,9 +15,10 @@
 
     private client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-    async registerUser(req:Request,res:Response):Promise<void>{
+    async registerUser(req:Request,res:Response){
         try {  
-            const register = await this.userService.registerUser(req.body)
+            const dto: UserRegisterDTO = req.body
+            const register = await this.userService.registerUser(dto)
             res.status(HttpStatus.OK).json({success:true,message:"success",data:register})
         } catch (error) {
             
@@ -21,10 +28,11 @@
     async Verifyotp(req:Request,res:Response):Promise<void>{
         try {
             
-            const {email,otp} = req.body 
-            const user = await this.userService.verifyOtp(email,otp)
+            console.log(req.body,"herehre");
+            const dto:VerifyOtpDTO = req.body
+            const user = await this.userService.verifyOtp(dto)
             res.status(HttpStatus.OK).json({
-                success:"true",
+                success:true,
                 message:"otp verified successfully",
                 data:user
             })
@@ -38,14 +46,15 @@
     }
     async LoginUser(req:Request,res:Response):Promise<void>{
         try {
-            const {email,password} = req.body 
+           
             console.log("BODY:", req.body);
-            const user = await this.userService.loginUser(email,password)
-            res.status(HttpStatus.OK).json({success:true,message:"login success",data:user})
+            const dto:LoginDTO = req.body
+            const user = await this.userService.loginUser(dto)
+            res.status(HttpStatus.OK).json({success:true,message:MESSAGES.USER.LOGIN_SUCCESS,data:user})
 
-        } catch (error) {
-            res.status(HttpStatus.BAD_REQUEST).json({
-                success:false,message:(error as Error).message
+        } catch (error:any) {
+            res.status(HttpStatus.FORBIDDEN).json({
+                success:false,message: error.message,
             })
 
         }
@@ -65,6 +74,7 @@
 
     async resendOtp(req:Request,res:Response){
         try {
+            console.log("BODY body:", req.body);
             const  {email} = req.body
 
             if(!email){
@@ -87,8 +97,9 @@
     }
     async forgetPassword(req:Request,res:Response){
         try {
-            const {email} = req.body
-            await this.userService.forgotPassword(email)
+            
+            const dto:ForgotPasswordDTO = req.body
+            await this.userService.forgotPassword(dto)
              res.status(HttpStatus.OK).json({ success:true,message:"Rest link sent to email"})
         } catch (error) {
             res.status(HttpStatus.BAD_REQUEST).json({
@@ -100,9 +111,8 @@
     }
     async resetPassword(req:Request,res:Response){
         try {
-
-        const { token,password } = req.body 
-        await this.userService.resetPassword(token,password)
+        const dto:ResetPasswordDTO = req.body
+        await this.userService.resetPassword(dto)
         res.status(HttpStatus.OK).json({
             success:true,
             message:"Password reset successfully"
